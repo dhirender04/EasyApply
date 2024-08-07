@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mailTemplateListFragment">
+
+    <fragment
+        android:id="@+id/mailTemplateListFragment"
+        android:name="com.example.easyapply.ui.mailtempalte.MailTemplateListFragment"
+        android:label="MailTemplateListFragment" >
+        <action
+            android:id="@+id/action_mailTemplateListFragment_to_mailDetailFragment"
+            app:destination="@id/mailDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/mailDetailFragment"
+        android:name="com.example.easyapply.ui.mailDetail.MailDetailFragment"
+        android:label="fragment_mail_detail"
+        tools:layout="@layout/fragment_mail_detail" >
+        <argument android:name="mailData"
+            app:argType="string"/>
+    </fragment>
+</navigation>
