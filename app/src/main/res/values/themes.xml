@@ -10,4 +10,17 @@
     <style name="CustomBoldTheme">
         <item name="fontFamily"/>
     </style>
+    <style name="DefaultButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">?attr/colorPrimary</item> <!-- Default background color -->
+        <item name="android:textColor">?attr/colorPrimary</item> <!-- Default text color -->
+    </style>
+
+    <!-- Custom Outlined Button Style -->
+    <style name="OutlinedButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="strokeColor">?attr/colorPrimary</item> <!-- Outline color -->
+        <item name="strokeWidth">2dp</item> <!-- Outline width -->
+        <item name="cornerRadius">4dp</item> <!-- Corner radius -->
+        <item name="android:textColor">?attr/colorPrimary</item> <!-- Text color -->
+        <item name="android:backgroundTint">@android:color/transparent</item> <!-- Transparent background -->
+    </style>
 </resources>

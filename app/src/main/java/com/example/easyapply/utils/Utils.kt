@@ -7,6 +7,8 @@ import androidx.core.content.FileProvider
 import java.io.File
 
 object Utils {
+    val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+
     fun sendMail(
         context: Context,
         to: String,

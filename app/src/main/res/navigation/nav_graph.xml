@@ -21,4 +21,12 @@
         <argument android:name="mailData"
             app:argType="string"/>
     </fragment>
+    <fragment
+        android:id="@+id/directMailFragment"
+        android:name="com.example.easyapply.ui.directMail.DirectMailFragment"
+        android:label="DirectMailFragment" >
+        <argument android:name="mailData"
+            app:argType="string"/>
+    </fragment>
+
 </navigation>

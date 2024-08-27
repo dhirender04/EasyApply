@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="primary_color">#6750A4</color>
+    <color name="outlined_button_text_color">#FF6200EE</color> <!-- Example color for outlined button text -->
+    <color name="solid_button_text_color">#FFFFFF</color> <!-- Example color for solid button text -->
 </resources>

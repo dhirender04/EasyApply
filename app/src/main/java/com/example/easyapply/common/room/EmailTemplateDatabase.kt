@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.easyapply.utils.Constants.EMAIL_TEMPLATE_TABLE
 
-@Database(entities = [EmailTemplate::class], version = 1, exportSchema = false)
+@Database(entities = [EmailTemplate::class], version = 2, exportSchema = false)
 abstract class EmailTemplateDatabase : RoomDatabase() {
     abstract fun emailTemplateDao(): EmailTemplateDao
 

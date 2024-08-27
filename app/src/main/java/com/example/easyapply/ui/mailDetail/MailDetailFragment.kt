@@ -13,22 +13,26 @@ import android.view.LayoutInflater
 import android.view.PixelCopy.Request
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
- import com.example.easyapply.R
+import com.example.easyapply.R
 import com.example.easyapply.databinding.FragmentMailDetailBinding
 import com.example.easyapply.common.room.EmailTemplate
 import com.example.easyapply.utils.Constants.MAIL_TO_DATA
+import com.example.easyapply.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
- @AndroidEntryPoint
+
+@AndroidEntryPoint
 class MailDetailFragment : Fragment() {
     private val viewModel: MailDetailViewModel by viewModels()
     private lateinit var pickPdfLauncher: ActivityResultLauncher<Intent>
     lateinit var binding: FragmentMailDetailBinding
+    private var uriToByteArray:ByteArray?= null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -50,8 +54,10 @@ class MailDetailFragment : Fragment() {
                 if (result.resultCode == RESULT_OK) {
                     val uri = result.data?.data
                     uri?.let {
+                          uriToByteArray = uriToByteArray(it)
                         Log.e(TAG, "onViewCreated:FileValue -- " + it)
                         val getName = getFileNameFromUri(it)
+                        binding.selectedCV.text = getName
                         Log.e(TAG, "onViewCreated:FileValueFullName -- " + getName)
                     }
                 }
@@ -65,18 +71,58 @@ class MailDetailFragment : Fragment() {
             ?: templateAdd() // check come from edit or add template
 
         binding.btSave.setOnClickListener {
+        }
+        binding.btncvUpload.setOnClickListener {
             openFilePicker()
         }
-        binding.btSaveRoom.setOnClickListener {
-            val email = EmailTemplate(
-                to = "abc@gmail.com",
-                from = "example@example.com",
-                subject = "Test Subject",
-                body = "This is the body of the mail.",
-                attachmentPdf = "/path/to/your/file.pdf"
-            )
-            viewModel.insert(email)
+        binding.apply {
+            btSaveRoom.setOnClickListener {
+                if (fromVallidation()) {
+                    val email = EmailTemplate(
+                        to = etFrom.text.toString().trim(),
+                        from = etTo.text.toString().trim(),
+                        subject = etSubject.text.toString().trim(),
+                        body = textInputEditText.text.toString().trim(),
+                        attachmentPdf = "",
+                        selectedCVPdf = uriToByteArray
+                    )
+                    Log.e(TAG, "onViewCreated:------>> "+email )
+                    viewModel.insert(email)
+                }
+            }
         }
+    }
+
+    private fun fromVallidation(): Boolean {
+        binding.apply {
+            val email = etFrom.text.toString().trim()
+            val etTo = etTo.text.toString().trim()
+            if (email.isEmpty()) {
+                Toast.makeText(requireContext(), "Email is required", Toast.LENGTH_SHORT).show()
+                return false
+            } else if (!email.matches(Utils.emailPattern.toRegex())) {
+                Toast.makeText(requireContext(), "Invalid email format", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if (etTo.isEmpty()) {
+                Toast.makeText(requireContext(), "Email is required", Toast.LENGTH_SHORT).show()
+                return false
+            } else if (!etTo.matches(Utils.emailPattern.toRegex())) {
+                Toast.makeText(requireContext(), "Invalid email format", Toast.LENGTH_SHORT).show()
+                return false
+            }
+            if (etSubject.text.toString().trim().isEmpty()) {
+                Toast.makeText(requireContext(), "Subject must be mention", Toast.LENGTH_SHORT)
+                    .show()
+                return false
+            }
+            if (textInputEditText.text.toString().trim().isEmpty()) {
+                Toast.makeText(requireContext(), "Please write your email", Toast.LENGTH_SHORT)
+                    .show()
+                return false
+            }
+        }
+        return true
     }
 
     private fun templateEdit() {
@@ -123,5 +169,12 @@ class MailDetailFragment : Fragment() {
         // Return the file name
         return fileName
     }
+
+    private fun uriToByteArray(uri: Uri): ByteArray? {
+        return requireContext().contentResolver.openInputStream(uri)?.use {
+            it.readBytes()
+        }
+    }
+
 
 }

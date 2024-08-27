@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                 val bundle = Bundle().apply {
                     putString(MAIL_TO_DATA,data)
                 }
-                findNavController(R.id.fragment_container).navigate(R.id.mailDetailFragment,bundle)
+                findNavController(R.id.fragment_container).navigate(R.id.directMailFragment,bundle)
             }
         }
 

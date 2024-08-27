@@ -11,5 +11,6 @@ data class EmailTemplate(
     val from:String,
     val subject:String,
     val body:String,
-    val attachmentPdf:String
+    val attachmentPdf:String="",
+    val selectedCVPdf:ByteArray?
 )
