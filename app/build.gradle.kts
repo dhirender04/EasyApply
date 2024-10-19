@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.hilt.android)
 //    annotationProcessor(libs.hilt.android.compiler)
     kapt(libs.hilt.android.compiler)
+    implementation(libs.androidx.fragment.ktx)
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.easyapply.common.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
 import com.example.easyapply.common.room.EmailTemplateDao
 import com.example.easyapply.common.room.EmailTemplateDatabase
@@ -30,5 +31,10 @@ class DatabaseModule {
     @Provides
     fun provideEmailDao(database: EmailTemplateDatabase): EmailTemplateDao {
         return database.emailTemplateDao()
+    }
+    @Provides
+    @Singleton
+    fun provideSharedPreferences(@ApplicationContext appContext: Context):SharedPreferences{
+        return appContext.getSharedPreferences(Constants.PREFERENCES_NAME,Context.MODE_PRIVATE)
     }
 }

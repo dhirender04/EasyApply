@@ -1,10 +1,12 @@
 package com.example.easyapply.ui.directMail
 
+import android.Manifest
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,20 +16,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.example.easyapply.R
+import com.example.easyapply.common.utils.PreferenceUtil
 import com.example.easyapply.databinding.FragmentDirectMailBinding
+import com.example.easyapply.utils.Constants
 import com.example.easyapply.utils.Constants.MAIL_TO_DATA
+import com.example.easyapply.utils.Utils.fromBase64
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DirectMailFragment : Fragment() {
 
     private lateinit var binding: FragmentDirectMailBinding
-    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences //remove this and used PreferenceUtil
+    @Inject
+    lateinit var preferenceUtil: PreferenceUtil
     private var isEditMode: Boolean = false
     private lateinit var pickCVLauncher: ActivityResultLauncher<Intent>
 
@@ -43,8 +52,7 @@ class DirectMailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        sharedPreferences =
-            requireContext().getSharedPreferences("EmailPreferences", Context.MODE_PRIVATE)
+        sharedPreferences =  requireContext().getSharedPreferences("EmailPreferences", Context.MODE_PRIVATE)
         binding = FragmentDirectMailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -53,8 +61,15 @@ class DirectMailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val mailData = arguments?.getString(MAIL_TO_DATA) ?: ""
         Log.e(TAG, "onViewCreated:mailData " + mailData)
+        val cvFileUriString = preferenceUtil.getFromSharePreference(Constants.USER_CV,"")
+        val cvName = preferenceUtil.getFromSharePreference(Constants.USER_CV_NAME,"")
+
+
+
+
 
         binding.apply {
+            selectedCV.setText(cvName)
             // Restore saved data
             etFrom.setText(sharedPreferences.getString("fromEmail", "kumardhirender04@gmail.com"))
             etTo.setText(sharedPreferences.getString("toEmail", mailData))
@@ -92,8 +107,9 @@ class DirectMailFragment : Fragment() {
                 toggleEditMode(isEditMode)
             }
             btSend.setOnClickListener {
-                val cvFileUriString = sharedPreferences.getString("cvFilePath", null)
+//              val cvFileUriString = sharedPreferences.getString("cvFilePath", null)
                 val cvFileUri = cvFileUriString?.let { Uri.parse(it) } // Convert String back to Uri
+                Log.e(TAG, "onViewCreated: "+cvFileUriString?.fromBase64()?.size )
                 sendEmailWithAttachment(mailData, etSubject.text.toString(), etComposeText.text.toString(), cvFileUri)
             }
 
@@ -175,14 +191,21 @@ private fun sendEmailWithAttachment(mailTo: String, subject: String, body: Strin
         putExtra(Intent.EXTRA_EMAIL, arrayOf(mailTo))
         putExtra(Intent.EXTRA_SUBJECT, subject)
         putExtra(Intent.EXTRA_TEXT, body)
-        putExtra(Intent.EXTRA_STREAM, getFileFromRaw())
-
-//        cvFileUri?.let {
+//        getFileFromRaw().let {
 //            putExtra(Intent.EXTRA_STREAM, it)
-//            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Grant permission to read the URI
+//            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
 //        }
+        cvFileUri?.let {
+            putExtra(Intent.EXTRA_STREAM, it)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // Grant permission to read the URI
+        }
     }
-    startActivity(Intent.createChooser(intent, "Send email..."))
+    if (intent.resolveActivity(requireContext().packageManager) != null) {
+        startActivity(Intent.createChooser(intent, "Send email..."))
+    } else {
+        Log.e(TAG, "No email client installed on the device")
+    }
+//    startActivity(Intent.createChooser(intent, "Send email..."))
 }
 
     private fun getFileUri(file: File): Uri {

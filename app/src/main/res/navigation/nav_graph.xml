@@ -3,8 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mailTemplateListFragment">
-
+    app:startDestination="@id/homeFragment">
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.easyapply.ui.home.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/mailTemplateListFragment"
         android:name="com.example.easyapply.ui.mailtempalte.MailTemplateListFragment"
@@ -28,5 +32,6 @@
         <argument android:name="mailData"
             app:argType="string"/>
     </fragment>
+
 
 </navigation>
